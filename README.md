@@ -1,59 +1,44 @@
-# Banking App Test Framework
+# Expense Tracker
 
 ## Overview
-This is a Java Selenium BDD test framework for a banking app using Cucumber. The framework is designed to be scalable, maintainable, and easy to use.
+This is a web-based Expense Tracker application that allows users to track their income and expenses. The application displays the current balance, provides forms for adding income and expenses, shows a transaction history, and persists data using localStorage.
 
-## Prerequisites
-- Java 17 or later
-- Maven 3.8.6 or later
-- Selenium WebDriver 4.8.0 or later
-- Cucumber 6.10.4 or later
+## Features
+- Displays the current balance
+- Provides forms for adding income and expenses
+- Shows a transaction history
+- Persists data using localStorage
+
+## Tech Stack
+- HTML
+- CSS
+- JavaScript
 
 ## Setup Instructions
-1. Clone the repository using `git clone https://github.com/testmail-ihub/testFrameworkRepo.git`
-2. Navigate to the project directory using `cd testFrameworkRepo`
-3. Run `mvn clean install` to install all dependencies
-4. Run `mvn test` to run all tests
+1. Clone the repository using `git clone https://github.com/testmail-ihub/expense-tracker.git`
+2. Navigate to the project directory using `cd expense-tracker`
+3. Open `index.html` in a web browser to start using the application
+
+## Usage Guide
+1. Open the application in a web browser
+2. Enter an amount and select the transaction type (income or expense)
+3. Click the "Add Transaction" button to add the transaction
+4. The current balance will be updated automatically
+5. The transaction history will be displayed below the balance
 
 ## Project Structure
 ```
-testFrameworkRepo/
-pom.xml
-src/
-  main/
-    java/
-      com/
-        example/
-          bankingapp/
-            App.java
-  test/
-    java/
-      com/
-        example/
-          bankingapp/
-            BaseTest.java
-            LoginStepDefs.java
-  resources/
-    features/
-      login.feature
+expense-tracker/
+index.html
+style.css
+app.js
+utils.js
 ```
 
-## How to Run Tests
-1. Create a new feature file in `src/test/resources/features` with a `.feature` extension
-2. Write step definitions in `src/test/java/com/example/bankingapp` using the `@Given`, `@When`, and `@Then` annotations
-3. Run `mvn test` to run all tests
-
-## Tech Stack
-- Java 17
-- Selenium WebDriver 4.8.0
-- Cucumber 6.10.4
-- Maven 3.8.6
-
-## Dependencies
-- `org.seleniumhq.selenium:selenium-java:4.8.0`
-- `io.cucumber:cucumber-java:6.10.4`
-- `io.cucumber:cucumber-junit:6.10.4`
-- `org.junit.jupiter:junit-jupiter:5.9.1`
+## How to Use
+1. Create a new transaction by filling out the form and clicking the "Add Transaction" button
+2. View the current balance and transaction history
+3. Delete a transaction by clicking on it in the transaction history
 
 ## Contributing
 1. Fork the repository
