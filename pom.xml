@@ -5,52 +5,43 @@
          http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.banking.app</groupId>
-    <artifactId>banking-app</artifactId>
+    <groupId>com.testframework</groupId>
+    <artifactId>selenium-test-automation-framework</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>Banking App</name>
-    <description>Banking App Test Framework</description>
+    <name>Selenium Test Automation Framework</name>
+    <description>Selenium Test Automation Framework using Maven, TestNG, and Page Object Model</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>11</java.version>
-        <cucumber.version>6.10.4</cucumber.version>
         <selenium.version>3.141.59</selenium.version>
-        <junit.version>5.8.2</junit.version>
+        <testng.version>7.4.0</testng.version>
+        <webdrivermanager.version>5.0.0</webdrivermanager.version>
+        <extentreports.version>5.0.0</extentreports.version>
+        <log4j2.version>2.17.2</log4j2.version>
+        <apache.poi.version>5.0.0</apache.poi.version>
+        <jackson.version>2.13.3</jackson.version>
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>io.cucumber</groupId>
-            <artifactId>cucumber-java</artifactId>
-            <version>${cucumber.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.cucumber</groupId>
-            <artifactId>cucumber-junit</artifactId>
-            <version>${cucumber.version}</version>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
             <version>${selenium.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <version>${junit.version}</version>
-            <scope>test</scope>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>${testng.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>${junit.version}</version>
-            <scope>test</scope>
+            <groupId>io.github.bonigarcia</groupId>
+            <artifactId>webdrivermanager</artifactId>
+            <version>${webdrivermanager.version}</version>
         </dependency>
+        <!-- Add ExtentReports, Log4j2, Apache POI, Jackson dependencies here -->
     </dependencies>
 
     <build>
@@ -68,6 +59,11 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.22.2</version>
+                <configuration>
+                    <suiteXmlFiles>
+                        <suiteXmlFile>testng.xml</suiteXmlFile>
+                    </suiteXmlFiles>
+                </configuration>
             </plugin>
         </plugins>
     </build>
