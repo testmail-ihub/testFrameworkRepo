@@ -1,66 +1,58 @@
-# Banking App Test Framework
+# testFrameworkRepo
 
 ## Overview
-This is a Java Selenium BDD test framework for a banking app using Cucumber. The framework is designed to be scalable, maintainable, and easy to use.
-
-## Prerequisites
-- Java 17 or later
-- Maven 3.8.6 or later
-- Selenium WebDriver 4.8.0 or later
-- Cucumber 6.10.4 or later
-
-## Setup Instructions
-1. Clone the repository using `git clone https://github.com/testmail-ihub/testFrameworkRepo.git`
-2. Navigate to the project directory using `cd testFrameworkRepo`
-3. Run `mvn clean install` to install all dependencies
-4. Run `mvn test` to run all tests
-
-## Project Structure
-```
-testFrameworkRepo/
-pom.xml
-src/
-  main/
-    java/
-      com/
-        example/
-          bankingapp/
-            App.java
-  test/
-    java/
-      com/
-        example/
-          bankingapp/
-            BaseTest.java
-            LoginStepDefs.java
-  resources/
-    features/
-      login.feature
-```
-
-## How to Run Tests
-1. Create a new feature file in `src/test/resources/features` with a `.feature` extension
-2. Write step definitions in `src/test/java/com/example/bankingapp` using the `@Given`, `@When`, and `@Then` annotations
-3. Run `mvn test` to run all tests
+The `testFrameworkRepo` project is a Java-based test framework designed to provide a robust and efficient way to perform system health checks. This repository contains the source code, build configuration, and CI/CD pipeline for automating the testing process.
 
 ## Tech Stack
-- Java 17
-- Selenium WebDriver 4.8.0
-- Cucumber 6.10.4
-- Maven 3.8.6
+- **Java**: The primary programming language used for developing the test framework.
+- **Maven**: The build automation tool used to manage dependencies and compile the code.
+- **Jenkins**: The CI/CD tool used to automate the build, test, and deployment process.
 
-## Dependencies
-- `org.seleniumhq.selenium:selenium-java:4.8.0`
-- `io.cucumber:cucumber-java:6.10.4`
-- `io.cucumber:cucumber-junit:6.10.4`
-- `org.junit.jupiter:junit-jupiter:5.9.1`
+## Directory Structure
+The repository is structured as follows:
 
-## Contributing
-1. Fork the repository
-2. Create a new branch for your feature or bug fix
-3. Make your changes and commit them
-4. Push your branch to your fork
-5. Submit a pull request to the main repository
+```
+testFrameworkRepo/
+├── pom.xml
+├── src/
+│   ├── main/
+│   │   ├── java/
+│   │   │   ├── com/
+│   │   │       ├── snc/
+│   │   │           ├── core/
+│   │   │               ├── BaseService.java
+│   │   │               ├── HealthCheckService.java
+│   │   ├── resources/
+│   ├── test/
+│   │   ├── java/
+│   │   │   ├── com/
+│   │   │       ├── snc/
+│   │   │           ├── core/
+│   │   │               ├── HealthCheckServiceTest.java
+├── jenkins-pipeline.yaml
+```
 
-## License
-This project is licensed under the MIT License.
+### Key Files
+- **BaseService.java**: The base class for all services, providing a logger and utility methods.
+- **HealthCheckService.java**: The service class responsible for checking the system health.
+- **HealthCheckServiceTest.java**: The unit test class for the `HealthCheckService`.
+- **jenkins-pipeline.yaml**: The CI/CD pipeline configuration file for automating the build and test process.
+
+## Setup Instructions
+To set up the project, follow these steps:
+1. Clone the repository: `git clone https://github.com/testmail-ihub/testFrameworkRepo.git`
+2. Navigate to the project directory: `cd testFrameworkRepo`
+3. Build the project using Maven: `mvn clean install`
+4. Run the tests: `mvn test`
+
+## CI/CD Process
+The CI/CD pipeline is configured to trigger on pull requests and automate the build, test, and deployment process. The pipeline performs the following steps:
+1. Checkout the code from the repository.
+2. Install dependencies using Maven.
+3. Run all tests with `mvn test`.
+4. Archive test reports and notify on build status.
+
+## Contribution Guidelines
+- Fork the repository and create a feature branch.
+- Make your changes and ensure all tests pass.
+- Submit a pull request for review.
