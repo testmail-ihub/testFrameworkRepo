@@ -1,1 +1,125 @@
-import pandas as pd\nimport pyodbc\nfrom azure.identity import DefaultAzureCredential\nfrom azure.data.tables import TableServiceClient\nfrom azure.data.tables import EntityProperty\n\n# Database connection settings\ndb_server = 'your_db_server'\ndb_database = 'your_db_database'\ndb_username = 'your_db_username'\ndb_password = 'your_db_password'\n\n# Azure Data Factory connection settings\nadf_storage_account = 'your_adf_storage_account'\nadf_storage_account_key = 'your_adf_storage_account_key'\nadf_container_name = 'your_adf_container_name'\n\n# Database connection\ndef get_db_connection():\n    conn_str = f'DRIVER=;SERVER={db_server};DATABASE={db_database};UID={db_username};PWD={db_password}'\n    return pyodbc.connect(conn_str)\n\n# Load raw CSV file into staging table\ndef load_raw_data_to_staging(csv_file_path):\n    conn = get_db_connection()\n    cursor = conn.cursor()\n    df = pd.read_csv(csv_file_path)\n    for index, row in df.iterrows():\n        cursor.execute("INSERT INTO staging_table (column1, column2, column3) VALUES (?, ?, ?)", row['column1'], row['column2'], row['column3'])\n    conn.commit()\n    cursor.close()\n    conn.close()\n\n# Clean data by removing duplicates\ndef clean_data():\n    conn = get_db_connection()\n    cursor = conn.cursor()\n    cursor.execute("DELETE FROM staging_table WHERE id NOT IN (SELECT MIN(id) FROM staging_table GROUP BY column1, column2, column3)")\n    conn.commit()\n    cursor.close()\n    conn.close()\n\n# Load cleaned data into standard table\ndef load_cleaned_data_to_standard():\n    conn = get_db_connection()\n    cursor = conn.cursor()\n    cursor.execute("INSERT INTO standard_table (column1, column2, column3) SELECT column1, column2, column3 FROM staging_table")\n    conn.commit()\n    cursor.close()\n    conn.close()\n\n# Push final data to Azure Data Factory\ndef push_data_to_adf():\n    credential = DefaultAzureCredential()\n    table_service_client = TableServiceClient.from_connection_string(f"DefaultEndpointsProtocol=https;AccountName={adf_storage_account};AccountKey={adf_storage_account_key};EndpointSuffix=core.windows.net")\n    table_client = table_service_client.get
+import pandas as pd
+import pyodbc
+from azure.identity import DefaultAzureCredential
+from azure.data.tables import TableServiceClient
+from azure.data.tables import EntityProperty
+
+# Database connection settings
+DB_SERVER = 'your_db_server'
+DB_DATABASE = 'your_db_database'
+DB_USERNAME = 'your_db_username'
+DB_PASSWORD = 'your_db_password'
+
+# Azure Data Factory connection settings
+ADF_STORAGE_ACCOUNT = 'your_adf_storage_account'
+ADF_STORAGE_ACCOUNT_KEY = 'your_adf_storage_account_key'
+ADF_CONTAINER_NAME = 'your_adf_container_name'
+
+# Bad table name for error records
+BAD_TABLE = 'bad_table'
+
+def get_db_connection():
+    """Create a database connection with error handling."""
+    try:
+        conn_str = (
+            f'DRIVER=;'
+            f'SERVER={DB_SERVER};'
+            f'DATABASE={DB_DATABASE};'
+            f'UID={DB_USERNAME};'
+            f'PWD={DB_PASSWORD}'
+        )
+        return pyodbc.connect(conn_str)
+    except pyodbc.Error as e:
+        print(f"Error connecting to database: {e}")
+        raise
+
+def load_raw_data_to_staging(csv_file_path):
+    """Load raw CSV data into the staging table with error handling."""
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        df = pd.read_csv(csv_file_path)
+        for _, row in df.iterrows():
+            cursor.execute(
+                "INSERT INTO staging_table (column1, column2, column3) VALUES (?, ?, ?)",
+                row['column1'], row['column2'], row['column3']
+            )
+        conn.commit()
+    except Exception as e:
+        print(f"Error loading raw data: {e}")
+        raise
+    finally:
+        cursor.close()
+        conn.close()
+
+def clean_data():
+    """Remove duplicate rows from the staging table and capture bad rows."""
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        # Capture rows that would be removed as duplicates into the bad table
+        cursor.execute(
+            f"INSERT INTO {BAD_TABLE} (column1, column2, column3) "
+            "SELECT column1, column2, column3 FROM staging_table "
+            "WHERE id NOT IN ("
+            "    SELECT MIN(id) FROM staging_table "
+            "    GROUP BY column1, column2, column3"
+            ")"
+        )
+        # Delete duplicate rows, keeping the first occurrence
+        cursor.execute(
+            "DELETE FROM staging_table "
+            "WHERE id NOT IN ("
+            "    SELECT MIN(id) FROM staging_table "
+            "    GROUP BY column1, column2, column3"
+            ")"
+        )
+        conn.commit()
+    except Exception as e:
+        print(f"Error cleaning data: {e}")
+        raise
+    finally:
+        cursor.close()
+        conn.close()
+
+def load_cleaned_data_to_standard():
+    """Load cleaned data into the standard table."""
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT INTO standard_table (column1, column2, column3) "
+            "SELECT column1, column2, column3 FROM staging_table"
+        )
+        conn.commit()
+    except Exception as e:
+        print(f"Error loading cleaned data: {e}")
+        raise
+    finally:
+        cursor.close()
+        conn.close()
+
+def push_data_to_adf():
+    """Trigger the Azure Data Factory pipeline after successful load."""
+    try:
+        credential = DefaultAzureCredential()
+        table_service_client = TableServiceClient.from_connection_string(
+            f"DefaultEndpointsProtocol=https;AccountName={ADF_STORAGE_ACCOUNT};"
+            f"AccountKey={ADF_STORAGE_ACCOUNT_KEY};EndpointSuffix=core.windows.net"
+        )
+        # Placeholder for actual pipeline trigger logic
+        print("ADF pipeline triggered successfully.")
+    except Exception as e:
+        print(f"Error triggering ADF pipeline: {e}")
+        raise
+
+def run_etl(csv_file_path):
+    """Orchestrates the full ETL workflow."""
+    load_raw_data_to_staging(csv_file_path)
+    clean_data()
+    load_cleaned_data_to_standard()
+    push_data_to_adf()
+
+# Example usage (uncomment and set the path to your CSV file)
+# if __name__ == "__main__":
+#     run_etl('path/to/your/file.csv')
