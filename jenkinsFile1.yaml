@@ -1,0 +1,60 @@
+pipeline {
+    agent any
+
+    triggers {
+        githubPush {
+            crumbIssuer(null)
+            repo('testFrameworkRepo')
+            branch('testFramworkBranch')
+            cron('* * * * *')
+        }
+        githubPullRequest {
+            crumbIssuer(null)
+            repo('testFrameworkRepo')
+            branch('testFramworkBranch')
+            triggerOn('created')
+        }
+    }
+
+    options {
+        timeout(time: 30, unit: 'MINUTES')
+    }
+
+    stages {
+        stage('Checkout Code') {
+            steps {
+                checkout scm
+            }
+        }
+        stage('Set up Java and Maven') {
+            steps {
+                withMaven(MavenVersion.VERSION_3_8_6) {
+                    sh 'mvn --version'
+                }
+                sh 'java -version'
+            }
+        }
+        stage('Install Dependencies') {
+            steps {
+                sh 'mvn clean install'
+            }
+        }
+        stage('Run Selenium Tests') {
+            steps {
+                sh 'mvn test'
+            }
+        }
+    }
+    post {
+        always {
+            junit 'reports/**/*.xml'
+        }
+        failure {
+            archiveArtifacts artifacts: 'target/*.war', allowEmptyArchive: true
+            mail to: 'testmail-ihub@email.com', subject: 'Jenkins Pipeline Failure', body: 'The Jenkins pipeline has failed.'
+        }
+        success {
+            mail to: 'testmail-ihub@email.com', subject: 'Jenkins Pipeline Success', body: 'The Jenkins pipeline has succeeded.'
+        }
+    }
+}
