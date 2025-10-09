@@ -1,0 +1,19 @@
+pipeline {
+    agent any
+
+    triggers {
+        githubPullRequest()
+    }
+
+    environment {
+        MAVEN_CMD = 'mvn'
+    }
+
+    stages {
+        stage('Build and Test') {
+            steps {
+                sh '''${MAVEN_CMD} clean test'''
+            }
+        }
+    }
+}
