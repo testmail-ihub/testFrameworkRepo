@@ -1,0 +1,11 @@
+pipeline:
+  agent any
+  stages:
+    - stage: 'Build and Test'
+      when:
+        branch: 'feature/ciCdSetupForWithoutSkill'
+      steps:
+        - script:
+            sh 'mvn clean install'
+        - script:
+            sh 'mvn test'
